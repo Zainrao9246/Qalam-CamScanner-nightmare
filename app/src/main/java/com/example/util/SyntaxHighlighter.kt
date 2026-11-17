@@ -124,12 +124,12 @@ object SyntaxHighlighter {
         val codeEnd = commentStart ?: line.length
 
         // strings
-        STRING_REGEX.findAll(line, 0, codeEnd).forEach { m ->
+        STRING_REGEX.findAll(line.take(codeEnd)).forEach { m ->
             sb.addStyle(SpanStyle(color = p.string), m.range.first, m.range.last + 1)
         }
 
         // numbers (skip ones inside strings)
-        NUMBER_REGEX.findAll(line, 0, codeEnd).forEach { m ->
+          NUMBER_REGEX.findAll(line.take(codeEnd)).forEach { m ->
             if (!isInsideAny(m.range, line, codeEnd)) {
                 sb.addStyle(SpanStyle(color = p.number), m.range.first, m.range.last + 1)
             }
@@ -144,7 +144,7 @@ object SyntaxHighlighter {
             else -> emptySet()
         }
         if (keywords.isNotEmpty()) {
-            WORD_REGEX.findAll(line, 0, codeEnd).forEach { m ->
+             WORD_REGEX.findAll(line.take(codeEnd)).forEach { m ->
                 val word = m.value
                 val match = (word in keywords) ||
                     (lang == Lang.SQL && word.uppercase() in SQL_KEYWORDS)
@@ -199,7 +199,7 @@ object SyntaxHighlighter {
     }
 
     private fun isInsideAny(range: IntRange, line: String, limit: Int): Boolean {
-        STRING_REGEX.findAll(line, 0, limit).forEach { m ->
+       STRING_REGEX.findAll(line.take(limit)).forEach { m ->
             if (range.first >= m.range.first && range.last < m.range.last + 1) return true
         }
         return false
