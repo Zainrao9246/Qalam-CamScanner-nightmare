@@ -299,7 +299,7 @@ Start typing here...
         val cleaned = title.replace(Regex("[^a-zA-Z0-9 ]"), " ")
             .split(" ")
             .filter { it.isNotBlank() }
-            .joinToString("") { part -> part.replaceFirstChar { it.uppercaseChar } }
+            .joinToString("") { part -> part.replaceFirstChar { it.uppercaseChar() } }
         return cleaned.ifBlank { "Notes" }
     }
 
