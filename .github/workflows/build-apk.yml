@@ -1,0 +1,109 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    name: Build & Test Qalam APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle 9.3.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.3.1"
+
+      - name: Ensure Android SDK licenses are accepted
+        run: |
+          SDK_DIR="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          if [ -n "$SDK_DIR" ] && [ -x "$SDK_DIR/cmdline-tools/latest/bin/sdkmanager" ]; then
+            yes | "$SDK_DIR/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+          fi
+
+      - name: Prepare environment and debug keystore
+        run: |
+          if [ ! -f .env ] && [ -f .env.example ]; then
+            cp .env.example .env
+          fi
+          if [ -f debug.keystore.base64 ]; then
+            base64 -d debug.keystore.base64 > debug.keystore
+          elif [ ! -f debug.keystore ]; then
+            keytool -genkeypair -v \
+              -keystore debug.keystore \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname "CN=Shaheer Rao,OU=Android,O=Qalam,L=Lahore,C=PK"
+          fi
+
+      - name: Run unit & Robolectric tests
+        run: gradle :app:testDebugUnitTest --no-daemon
+
+      - name: Build Debug APK (ready to install on Android)
+        run: gradle :app:assembleDebug --no-daemon
+
+      - name: Package APK for download
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/app-debug.apk dist/Qalam-by-Shaheer-Rao.apk
+          {
+            echo "## Qalam by Shaheer Rao — Build Ready"
+            echo ""
+            echo "- **Package ID:** \`com.shaheerrao.camscanpro\`"
+            echo "- **Supported Android:** Android 7.0 (API 24) to Android 16+ (API 36)"
+            echo "- **APK Artifact:** \`Qalam-APK\` → unzip to get \`Qalam-by-Shaheer-Rao.apk\`"
+            echo "- **Highlights:** Create Word/Excel/PPTX/HTML/CSS/JS/TS/Markdown/JSON/code files offline with starter templates, HTML & Markdown offline preview, Code Editor with Edit+Save, PDF Annotator (Highlight/Ink/Comments/Sepia-Night), PDF Power Suite (Merge/Split/Compress/Watermark), Word/EPUB Reader & Offline TTS, Excel/CSV Editor (Sum/Avg), Slides Carousel, Batch Camera & ID/Book Scanner, Library Multi-Select & Subject Filters."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Qalam-APK
+          path: dist/Qalam-by-Shaheer-Rao.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Build Signed Release AAB & APK (if Release secrets are configured)
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -n "$RELEASE_KEYSTORE_BASE64" ]; then
+            echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > my-upload-key.jks
+            export KEYSTORE_PATH="$PWD/my-upload-key.jks"
+            gradle :app:assembleRelease :app:bundleRelease --no-daemon
+            mkdir -p dist-release
+            cp app/build/outputs/apk/release/*.apk dist-release/ 2>/dev/null || true
+            cp app/build/outputs/bundle/release/*.aab dist-release/ 2>/dev/null || true
+          else
+            echo "Skipping signed Release build (no RELEASE_KEYSTORE_BASE64 secret configured)."
+          fi
+
+      - name: Upload Release AAB & APK Artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Qalam-Release-AAB-APK
+          path: dist-release/*
+          if-no-files-found: ignore
+          retention-days: 30
