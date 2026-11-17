@@ -1,0 +1,18 @@
+# Local secrets - never commit real keys or keystores
+.env
+.env.local
+my-upload-key.jks
+debug.keystore
+
+# Android / Gradle build artifacts
+.gradle/
+build/
+local.properties
+.cxx/
+
+# IDE / OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
