@@ -326,8 +326,8 @@ object PdfEngine {
                         else -> Typeface.NORMAL
                     }
                     typeface = Typeface.create(Typeface.SERIF, style)
-                    if (block.isUnderline) underlineText = true
-                    if (block.isStrikethrough) strikeThruText = true
+                    if (block.isUnderline) isUnderlineText = true
+                    if (block.isStrikethrough) isStrikeThruText = true
                 }
 
                 val indent = if (block.type == WordBlockType.BULLET || block.type == WordBlockType.NUMBERED) 20 else 0
