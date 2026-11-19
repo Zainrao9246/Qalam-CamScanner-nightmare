@@ -71,7 +71,8 @@ jobs:
             echo "- **Package ID:** \`com.shaheerrao.camscanpro\`"
             echo "- **Supported Android:** Android 7.0 (API 24) to Android 16+ (API 36)"
             echo "- **APK Artifact:** \`Qalam-APK\` → unzip to get \`Qalam-by-Shaheer-Rao.apk\`"
-            echo "- **Highlights:** Create Word/Excel/PPTX/HTML/CSS/JS/TS/Markdown/JSON/code files offline with starter templates, HTML & Markdown offline preview, Code Editor with Edit+Save, PDF Annotator (Highlight/Ink/Comments/Sepia-Night), PDF Power Suite (Merge/Split/Compress/Watermark), Word/EPUB Reader & Offline TTS, Excel/CSV Editor (Sum/Avg), Slides Carousel, Batch Camera & ID/Book Scanner, Library Multi-Select & Subject Filters."
+            echo "- **Highlights:** Create Word/Excel/PPTX/HTML/CSS/JS/TS/Markdown/JSON/code files offline with starter templates, HTML & Markdown offline preview, Code Editor with Edit+Save + Undo/Redo + Line Numbers + Offline JS Runner, PDF Annotator (Highlight/Ink/Comments/Sepia-Night), PDF Power Suite (Merge/Split/Compress/Watermark), Word/EPUB Reader & Offline TTS, Excel/CSV Editor (Sum/Avg), Slides Carousel, Batch Camera & ID/Book Scanner with Auto-capture, Library Multi-Select & Subject Filters, Word Insert Picture & Insert Table (v2.7)."
+            echo "- **Qalam AI (v2.6, opt-in):** Groq-powered AI Assistant with free models — text chat and image-to-Word conversion. 100% offline by default; enable it by entering your free Groq API key in-app (Settings → AI). No API key is required to build; INTERNET permission is used only when AI is used."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload APK Artifact
