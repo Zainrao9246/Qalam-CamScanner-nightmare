@@ -29,7 +29,7 @@ class ExcelFormulaTest {
     @Test
     fun formulaEvaluationSumAvgMinMaxCount() {
         val sheet = sampleSheet()
-        assertEquals("248", ExcelEngine.evaluateFormula("=SUM(A2:A5)", sheet))
+        assertEquals("308", ExcelEngine.evaluateFormula("=SUM(A2:A5)", sheet))
         assertEquals("77", ExcelEngine.evaluateFormula("=SUM(A2:A5)/COUNT(A2:A5)", sheet))
         assertEquals("3.25", ExcelEngine.evaluateFormula("=AVG(B2:B5)", sheet))
         assertEquals("91", ExcelEngine.evaluateFormula("=MAX(A2:A5)", sheet))
@@ -44,7 +44,7 @@ class ExcelFormulaTest {
         assertEquals("20", ExcelEngine.evaluateFormula("=(2+3)*4", sheet))
         assertEquals("12.5", ExcelEngine.evaluateFormula("=A2*0.1+B2", sheet))
         assertEquals("80", ExcelEngine.evaluateFormula("=-5+A2", sheet))
-        assertEquals("80", ExcelEngine.evaluateFormula("=A2", sheet))
+        assertEquals("85", ExcelEngine.evaluateFormula("=A2", sheet))
     }
 
     @Test
@@ -64,7 +64,7 @@ class ExcelFormulaTest {
                 listOf("85", "10", ""),
                 listOf("15", "20", "")
             ),
-            formulas = mapOf("C1" to "=SUM(A1:A2)", "C2" to "=SUM(C1:B2)")
+            formulas = mapOf("C1" to "=SUM(A1:A2)", "C2" to "=C1+B2") 
         )
         val recalced = ExcelEngine.evaluateSheetFormulas(sheet)
         // C1 = 85+15 = 100; C2 = 100+20 = 120 (chained through C1)
