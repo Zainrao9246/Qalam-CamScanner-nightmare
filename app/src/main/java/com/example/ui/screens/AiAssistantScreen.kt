@@ -663,11 +663,11 @@ private fun ImagePreview(bitmap: Bitmap) {
         val drawH = bitmap.height * scale
         drawImage(
             imageBitmap,
-            dstOffset = androidx.compose.ui.geometry.IntOffset(
+            dstOffset = androidx.compose.ui.unit.IntOffset(
                 ((viewW - drawW) / 2f).toInt(),
                 ((viewH - drawH) / 2f).toInt()
             ),
-            dstSize = androidx.compose.ui.geometry.IntSize(drawW.toInt(), drawH.toInt())
+            dstSize = androidx.compose.ui.unit.IntSize(drawW.toInt(), drawH.toInt())
         )
     }
 }
