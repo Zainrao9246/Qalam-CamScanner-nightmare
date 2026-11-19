@@ -754,12 +754,12 @@ object ExcelEngine {
                     val maxChars = ((colW - 8f) / 5.5f).toInt().coerceAtLeast(3)
                     val clipped = if (text.length > maxChars) text.take(maxChars - 1) + "…" else text
                     val styleFlags = when {
-                        isHeaderRow || (cellStyle?.bold == true && (cellStyle.italic)) -> Typeface.BOLD_ITALIC
-                        isHeaderRow || cellStyle?.bold == true -> Typeface.BOLD
+                        isHeader || (cellStyle?.bold == true && (cellStyle.italic)) -> Typeface.BOLD_ITALIC
+                        isHeader || cellStyle?.bold == true -> Typeface.BOLD
                         cellStyle?.italic == true -> Typeface.ITALIC
                         else -> Typeface.NORMAL
                     }
-                    val cellPaint = if (isHeaderRow) {
+                    val cellPaint = if (isHeader) {
                         headerTextPaint
                     } else {
                         Paint(cellPaint).apply {
